@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: static-example
-        image: DOCKER_HUB_USER/APPLICATION_NAME:TAG
+        image: DOCKER_USERNAME/APPLICATION_NAME:TAG
         ports:
         - containerPort: 5000
         resources:
