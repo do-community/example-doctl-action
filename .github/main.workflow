@@ -70,10 +70,10 @@ action "Deploy to DigitalOcean Kubernetes" {
 
 action "Verify deployment" {
   needs = ["Deploy to DigitalOcean Kubernetes"]
-  uses = "docker://gcr.io/cloud-builders/kubectl"
+  uses = "docker://lachlanevenson/k8s-kubectl"
   env = {
     DEPLOYMENT = "static-example"
   }
   runs = "sh -l -c"
-  args = ["kubectl", "rollout", "status", "deployment/$DEPLOYMENT"]
+  args = ["kubectl rollout status deployment/$DEPLOYMENT"]
 }
