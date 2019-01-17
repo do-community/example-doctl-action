@@ -42,7 +42,7 @@ action "Push image to Docker Hub" {
 
 action "Save DigitalOcean kubeconfig" {
   needs = ["Push image to Docker Hub"]
-  uses = "andrewsomething/doctl-action@master"
+  uses = "andrewsomething/digitalocean-action/doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
     CLUSTER_NAME = "example"
