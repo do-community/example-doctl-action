@@ -45,7 +45,7 @@ action "Save DigitalOcean kubeconfig" {
   uses = "andrewsomething/digitalocean-action/doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
-    CLUSTER_NAME = "example"
+    CLUSTER_NAME = "actions-example"
   }
   args = ["kubernetes", "cluster", "kubeconfig", "save", "$CLUSTER_NAME"]
 }
