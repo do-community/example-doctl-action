@@ -5,7 +5,13 @@ workflow "Build and Deploy" {
   ]
 }
 
+action "Add commit SHA" {
+  uses = "actions/bin/sh@master"
+  args = ["echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta"]
+}
+
 action "Build Docker image" {
+  needs = ["Add commit SHA"]
   uses = "actions/docker/cli@master"
   args = ["build", "-t", "static-example", "."]
 }
