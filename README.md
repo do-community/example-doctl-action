@@ -1,6 +1,6 @@
 # GitHub Actions for DigitalOcean Example
 
-Tis repository contains an example workflow using the [GitHub Action for DigitalOcean](https://github.com/andrewsomething/digitalocean-action) to build, tag, and deploy a container image to a DigitalOcean Kubernetes cluster.
+Tis repository contains an example workflow using the [GitHub Action for DigitalOcean](https://github.com/digitalocean/action) to build, tag, and deploy a container image to a DigitalOcean Kubernetes cluster.
 
 ## Workflow
 
