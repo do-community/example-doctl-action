@@ -53,25 +53,18 @@ action "Save DigitalOcean kubeconfig" {
   env = {
     CLUSTER_NAME = "actions-example"
   }
-  args = ["kubernetes", "cluster", "kubeconfig", "save", "$CLUSTER_NAME"]
-}
-
-action "Set kubeconfig context" {
-  needs = ["Save DigitalOcean kubeconfig"]
-  uses = "docker://lachlanevenson/k8s-kubectl"
-  runs = "sh -l -c"
-  args = ["kubectl config use-context $(cat $HOME/.kube/config | grep -m 1 name | cut -d ':' -f 2)"]
+  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
 }
 
 action "Deploy to DigitalOcean Kubernetes" {
-  needs = ["Set kubeconfig context"]
+  needs = ["Save DigitalOcean kubeconfig"]
   uses = "docker://lachlanevenson/k8s-kubectl"
   env = {
     DOCKER_USERNAME = "andrewsomething"
     APPLICATION_NAME = "static-example"
   }
   runs = "sh -l -c"
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat $GITHUB_WORKSPACE/config/deployment.yml | sed 's/DOCKER_USERNAME/'\"$DOCKER_USERNAME\"'/' | sed 's/APPLICATION_NAME/'\"$APPLICATION_NAME\"'/' | sed 's/TAG/'\"$SHORT_REF\"'/' | kubectl apply -f - "]
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat $GITHUB_WORKSPACE/config/deployment.yml | sed 's/DOCKER_USERNAME/'\"$DOCKER_USERNAME\"'/' | sed 's/APPLICATION_NAME/'\"$APPLICATION_NAME\"'/' | sed 's/TAG/'\"$SHORT_REF\"'/' | kubectl --kubeconfig=$HOME/.kubeconfig apply -f - "]
 }
 
 action "Verify deployment" {
@@ -81,5 +74,5 @@ action "Verify deployment" {
     DEPLOYMENT = "static-example"
   }
   runs = "sh -l -c"
-  args = ["kubectl rollout status deployment/$DEPLOYMENT"]
+  args = ["kubectl --kubeconfig=$HOME/.kubeconfig rollout status deployment/$DEPLOYMENT"]
 }
