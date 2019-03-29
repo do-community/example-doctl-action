@@ -47,7 +47,7 @@ action "Update deployment file" {
     DOCKER_USERNAME = "andrewsomething"
     APPLICATION_NAME = "static-example"
   }
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) sed -i 's/<IMAGE>/'\"$DOCKER_USERNAME\\$APPLICATION_NAME:$SHORT_REF\"'/' $GITHUB_WORKSPACE/config/deployment.yml"]
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) sed -i 's/<IMAGE>/'\"$DOCKER_USERNAME\"'\\'\"$APPLICATION_NAME\"':'\"$SHORT_REF\"'/' $GITHUB_WORKSPACE/config/deployment.yml"]
 }
 
 action "Save DigitalOcean kubeconfig" {
