@@ -22,7 +22,7 @@ action "Build Docker image" {
     DOCKER_USERNAME = "andrewsomething"
     APPLICATION_NAME = "static-example"
   }
-  args = ["build", "-t", "$DOCKER_USERNAME/$APPLICATION_NAME", "."]
+  args = ["build", "-t", "$DOCKER_USERNAME/$APPLICATION_NAME:$(echo $GITHUB_SHA | head -c7)", "."]
 }
 
 action "Docker Login" {
@@ -47,7 +47,7 @@ action "Update deployment file" {
     DOCKER_USERNAME = "andrewsomething"
     APPLICATION_NAME = "static-example"
   }
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) sed -i 's/<IMAGE>/'\"$DOCKER_USERNAME\"'\\'\"$APPLICATION_NAME\"':'\"$SHORT_REF\"'/' $GITHUB_WORKSPACE/config/deployment.yml"]
+  args = ["TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|'${DOCKER_USERNAME}'/'${APPLICATION_NAME}':'${TAG}'|' $GITHUB_WORKSPACE/config/deployment.yml"]
 }
 
 action "Save DigitalOcean kubeconfig" {
