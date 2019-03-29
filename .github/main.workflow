@@ -5,6 +5,11 @@ workflow "Build and Deploy" {
   ]
 }
 
+action "Deploy branch filter" {
+  uses = "actions/bin/filter@master"
+  args = "branch master"
+}
+
 action "Add commit SHA" {
   uses = "actions/bin/sh@master"
   args = ["echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta"]
@@ -13,22 +18,11 @@ action "Add commit SHA" {
 action "Build Docker image" {
   needs = ["Add commit SHA"]
   uses = "actions/docker/cli@master"
-  args = ["build", "-t", "static-example", "."]
-}
-
-action "Deploy branch filter" {
-  uses = "actions/bin/filter@master"
-  args = "branch master"
-}
-
-action "Tag Docker image" {
-  needs = ["Build Docker image"]
-  uses = "actions/docker/tag@master"
   env = {
     DOCKER_USERNAME = "andrewsomething"
     APPLICATION_NAME = "static-example"
   }
-  args = ["static-example", "$DOCKER_USERNAME/$APPLICATION_NAME"]
+  args = ["build", "-t", "$DOCKER_USERNAME/$APPLICATION_NAME", "."]
 }
 
 action "Docker Login" {
@@ -37,7 +31,7 @@ action "Docker Login" {
 }
 
 action "Push image to Docker Hub" {
-  needs = ["Docker Login", "Tag Docker image"]
+  needs = ["Docker Login", "Build Docker image"]
   uses = "actions/docker/cli@master"
   env = {
     DOCKER_USERNAME = "andrewsomething"
@@ -46,9 +40,19 @@ action "Push image to Docker Hub" {
   args = ["push", "$DOCKER_USERNAME/$APPLICATION_NAME"]
 }
 
+action "Update deployment file" {
+  needs = ["Push image to Docker Hub"]
+  uses = "actions/bin/sh@master"
+  env = {
+    DOCKER_USERNAME = "andrewsomething"
+    APPLICATION_NAME = "static-example"
+  }
+  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) sed -i 's/<IMAGE>/'\"$DOCKER_USERNAME\/$APPLICATION_NAME:$SHORT_REF\"'/' $GITHUB_WORKSPACE/config/deployment.yml"]
+}
+
 action "Save DigitalOcean kubeconfig" {
   needs = ["Push image to Docker Hub"]
-  uses = "digitalocean/action/doctl@master"
+  uses = "digitalocean/actions/doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
     CLUSTER_NAME = "actions-example"
@@ -57,14 +61,9 @@ action "Save DigitalOcean kubeconfig" {
 }
 
 action "Deploy to DigitalOcean Kubernetes" {
-  needs = ["Save DigitalOcean kubeconfig"]
+  needs = ["Save DigitalOcean kubeconfig", "Update deployment file"]
   uses = "docker://lachlanevenson/k8s-kubectl"
-  env = {
-    DOCKER_USERNAME = "andrewsomething"
-    APPLICATION_NAME = "static-example"
-  }
-  runs = "sh -l -c"
-  args = ["SHORT_REF=$(echo ${GITHUB_SHA} | head -c7) && cat $GITHUB_WORKSPACE/config/deployment.yml | sed 's/DOCKER_USERNAME/'\"$DOCKER_USERNAME\"'/' | sed 's/APPLICATION_NAME/'\"$APPLICATION_NAME\"'/' | sed 's/TAG/'\"$SHORT_REF\"'/' | kubectl --kubeconfig=$HOME/.kubeconfig apply -f - "]
+  args = ["--kubeconfig=$HOME/.kubeconfig apply -f $GITHUB_WORKSPACE/config/deployment.yml"]
 }
 
 action "Verify deployment" {
