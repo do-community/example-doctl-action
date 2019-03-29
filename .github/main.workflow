@@ -63,7 +63,8 @@ action "Save DigitalOcean kubeconfig" {
 action "Deploy to DigitalOcean Kubernetes" {
   needs = ["Save DigitalOcean kubeconfig", "Update deployment file"]
   uses = "docker://lachlanevenson/k8s-kubectl"
-  args = ["--kubeconfig=$HOME/.kubeconfig apply -f $GITHUB_WORKSPACE/config/deployment.yml"]
+  runs = "sh -l -c"
+  args = ["kubectl --kubeconfig=$HOME/.kubeconfig apply -f $GITHUB_WORKSPACE/config/deployment.yml"]
 }
 
 action "Verify deployment" {
