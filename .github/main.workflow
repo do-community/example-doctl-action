@@ -51,7 +51,6 @@ action "Update deployment file" {
 }
 
 action "Save DigitalOcean kubeconfig" {
-  needs = ["Push image to Docker Hub"]
   uses = "digitalocean/actions/doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
