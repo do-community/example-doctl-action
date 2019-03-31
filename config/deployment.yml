@@ -29,6 +29,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: static-example-service
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: doctl-action.do-api.dev
 spec:
   type: LoadBalancer
   ports:
