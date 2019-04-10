@@ -51,7 +51,7 @@ action "Update deployment file" {
 }
 
 action "Save DigitalOcean kubeconfig" {
-  uses = "digitalocean/actions/doctl@master"
+  uses = "digitalocean/action-doctl@master"
   secrets = ["DIGITALOCEAN_ACCESS_TOKEN"]
   env = {
     CLUSTER_NAME = "actions-example"
