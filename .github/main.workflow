@@ -56,14 +56,14 @@ action "Save DigitalOcean kubeconfig" {
   env = {
     CLUSTER_NAME = "actions-example"
   }
-  args = ["kubernetes cluster kubeconfig show $CLUSTER_NAME > $HOME/.kubeconfig"]
+  args = ["kubernetes cluster kubeconfig save $CLUSTER_NAME"]
 }
 
 action "Deploy to DigitalOcean Kubernetes" {
   needs = ["Save DigitalOcean kubeconfig", "Update deployment file"]
   uses = "docker://lachlanevenson/k8s-kubectl"
   runs = "sh -l -c"
-  args = ["kubectl --kubeconfig=$HOME/.kubeconfig apply -f $GITHUB_WORKSPACE/config/deployment.yml"]
+  args = ["kubectl apply -f $GITHUB_WORKSPACE/config/deployment.yml"]
 }
 
 action "Verify deployment" {
@@ -73,5 +73,5 @@ action "Verify deployment" {
     DEPLOYMENT = "static-example"
   }
   runs = "sh -l -c"
-  args = ["kubectl --kubeconfig=$HOME/.kubeconfig rollout status deployment/$DEPLOYMENT"]
+  args = ["kubectl rollout status deployment/$DEPLOYMENT"]
 }
