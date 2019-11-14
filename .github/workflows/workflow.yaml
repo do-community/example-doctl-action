@@ -17,7 +17,7 @@ jobs:
       run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
 
     - name: Build container image
-      uses: actions/docker/cli@master
+      uses: actions/checkout@master
       with:
         args: build -t andrewsomething/static-example:$(echo $GITHUB_SHA | head -c7) .
 
@@ -28,7 +28,7 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push image to Docker Hub
-      uses: actions/docker/cli@master
+      uses: actions/checkout@master
       with:
         args: push andrewsomething/static-example
 
