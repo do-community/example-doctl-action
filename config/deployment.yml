@@ -1,9 +1,14 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: static-example
+  labels:
+    app: static-example
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: static-example
   strategy:
     rollingUpdate:
       maxSurge: 1
