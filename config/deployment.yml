@@ -29,6 +29,8 @@ spec:
             cpu: 100m
           limits:
             cpu: 100m
+      imagePullSecrets:
+      - name: registry-asb
 ---
 apiVersion: v1
 kind: Service
