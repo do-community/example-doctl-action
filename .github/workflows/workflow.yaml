@@ -17,24 +17,21 @@ jobs:
       run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
 
     - name: Build container image
-      run: docker build -t andrewsomething/static-example:$(echo $GITHUB_SHA | head -c7) .
-
-    - name: Docker Login
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-
-    - name: Push image to Docker Hub
-      run: docker push andrewsomething/static-example
-
-    - name: Update deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|andrewsomething/static-example:'${TAG}'|' $GITHUB_WORKSPACE/config/deployment.yml
+      run: docker build -t registry.digitalocean.com/asb/static-example:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push image to DigitalOcean Container Registry
+      run: docker push registry.digitalocean.com/asb/static-example
+
+    - name: Update deployment file
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/asb/static-example:'${TAG}'|' $GITHUB_WORKSPACE/config/deployment.yml
 
     - name: Save DigitalOcean kubeconfig
       run: doctl kubernetes cluster kubeconfig save actions-example-k8s-1-16
