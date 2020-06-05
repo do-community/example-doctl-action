@@ -7,7 +7,7 @@ This repository contains an example workflow using the [GitHub Action for Digita
 The [example workflow](.github/workflows/workflow.yaml) will trigger on every push to this repo's `master` branch. For push, the workflow will:
 
 * Build the image from [the included `Dockerfile`](Dockerfile)
-* Tag and push the image to Docker Hub
+* Tag and push the image to a private DigitalOcean container registry
 * Retrieve the `kubeconfig` file for a DigitalOcean Kubernetes cluster
 * Create a deployment using [config/deployment.yml](config/deployment.yml)
 
