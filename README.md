@@ -14,4 +14,5 @@ The [example workflow](.github/workflows/workflow.yaml) will trigger on every pu
 ### Notes
 
 * This example is using a Kubernetes cluster running v1.16.x with `action-doctl@v2`. (For older versions, see the [v1 tag](https://github.com/do-community/example-doctl-action/tree/v1).)
+* Your Kubernetes cluster must have access to your private DigitalOcean container registry (`doctl kubernetes cluster registry add <cluster>`).
 * This example uses `external-dns` [installed via Helm](https://github.com/helm/charts/tree/master/stable/external-dns). This is an optional requirement, but you will need to adjust your `config/deployment.yml` file if it is not in use.
