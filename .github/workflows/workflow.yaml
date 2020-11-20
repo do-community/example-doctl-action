@@ -2,6 +2,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'config/**'
+      - 'site/**'
+      - 'Dockerfile'
 
 jobs:
 
