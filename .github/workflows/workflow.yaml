@@ -6,6 +6,7 @@ on:
       - 'config/**'
       - 'site/**'
       - 'Dockerfile'
+      - '.github/workflows/**'
 
 jobs:
 
