@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'config/**'
       - 'site/**'
@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Checkout master
-      uses: actions/checkout@master
+    - name: Checkout main
+      uses: actions/checkout@v2
 
     - name: Update SHA
       run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
